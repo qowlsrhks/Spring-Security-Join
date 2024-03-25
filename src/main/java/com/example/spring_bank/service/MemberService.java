@@ -32,4 +32,17 @@ public class MemberService {
             throw new IllegalStateException("이미 가입된 회원입니다");
         }
     }
+    
+
+//    아이디 중복확인
+    public boolean checkMemberIdDuplicate(String memberId) {
+        return memberRepository.existsByMemberId(memberId);
+    }
+
+    
+//    이메일 중복 확인
+    public boolean checkMemberEmailDuplicate(String memberEmail) {
+        return memberRepository.existsByMemberEmail(memberEmail);
+    }
+
 }
