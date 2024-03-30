@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -36,13 +37,12 @@ public class MemberService {
 
 //    아이디 중복확인
     public boolean checkMemberIdDuplicate(String memberId) {
-        return memberRepository.existsByMemberId(memberId);
+        return !memberRepository.existsByMemberId(memberId);
     }
 
     
-//    이메일 중복 확인
+//    이메일 중복 확인s
     public boolean checkMemberEmailDuplicate(String memberEmail) {
-        return memberRepository.existsByMemberEmail(memberEmail);
+        return (!memberRepository.existsByMemberEmail(memberEmail));
     }
-
 }
