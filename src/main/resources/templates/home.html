@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인 성공</title>
+<style>
+    body {
+        background-color: #f0f4f8; /* 눈이 편안해지는 배경색 */
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        text-align: center;
+    }
+
+    #transferBtn, #logoutBtn {
+        display: block;
+        width: 200px;
+        padding: 10px;
+        margin: 10px auto;
+        background-color: #4CAF50; /* 버튼 배경색 */
+        color: white; /* 버튼 글자색 */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #logoutBtn {
+        background-color: #f44336; /* 로그아웃 버튼 배경색 */
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <a th:href="@{/account_success}" type="button" id="transferBtn">계좌 이체</a>
+    <button id="logoutBtn" onclick="location.href='/sign'">로그아웃</button>
+</div>
+
+</body>
+</html>
+
