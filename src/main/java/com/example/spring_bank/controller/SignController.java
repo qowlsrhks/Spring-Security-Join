@@ -18,6 +18,6 @@ public class SignController {
 
     @PostMapping("/sign")
     public String signForm() {
-        return "index";
+        return "home";
     }
 }

@@ -64,10 +64,10 @@
 </html>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!--회원 가입 아이디 중복확인-->
 <script>
     $(document).ready(function () {
         $("#memberId").focusout(function (){
-            var header = $("meta[name='_csrf_header']").attr("content");
             var token = $("meta[name='_csrf']").attr("content");
             var memberId = $("#memberId").val();
 
@@ -86,7 +86,7 @@
                dataType : 'json',
                success: function (result) {
                    if (result === true) {
-                       $("#check_memberId").css("color", "black").text("사용 가능한 아이디입니다");
+                       $("#check_memberId").css("color", "blue").text("사용 가능한 아이디입니다");
                    }else{
                        $("#check_memberId").css("color", "red").text("사용불가능 한 아이디입니다.");
                        $("#memberId").val('');
@@ -94,6 +94,40 @@
 
                }
            });
+        });
+    })
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#memberEmail").focusout(function () {
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var token = $("meta[name='_csrf']").attr("content");
+            var memberEmail = $("#memberEmail").val();
+
+            if (memberEmail === "") {
+                $("#check_memberEmail").css("color", "red").text("필수 입력란입니다");
+                return false;
+            }
+
+            $.ajax({
+                url: '/check-memberEmail',
+                type: 'post',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRF-TOKEN", token);
+                },
+                data: {memberEmail: memberEmail},
+                dataType: 'json',
+                success: function (result) {
+                    if (result === true) {
+                        $("#check_memberEmail").css("color", "blue").text("사용 가능한 이메일입니다");
+                    } else {
+                        $("#check_memberEmail").css("color", "red").text("중복된 이메일입니다.");
+                        $("#memberEmail").val('');
+                    }
+
+                }
+            });
         });
     })
 </script>

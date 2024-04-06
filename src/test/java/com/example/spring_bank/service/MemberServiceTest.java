@@ -31,7 +31,7 @@ public class MemberServiceTest {
         memberDTO.setMemberEmail("skswlsrhks@nate.com");
         memberDTO.setMemberId("ohigogo2");
         memberDTO.setMemberPw("1234");
-        return MemberEntity.MemberCreate(memberDTO, passwordEncoder);
+        return MemberService.MemberCreate(memberDTO, passwordEncoder);
     }
 
     @Test
