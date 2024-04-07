@@ -35,7 +35,7 @@ public class MemberController {
     // 회원가입 성공
     @PostMapping("register_form")
     public String registerMember(MemberDTO memberDTO) {
-        MemberEntity memberEntity = MemberService.MemberCreate(memberDTO, passwordEncoder);
+        MemberEntity memberEntity = MemberService.memberCreate(memberDTO, passwordEncoder);
         memberService.saveMember(memberEntity);
         return "redirect:/sign";
     }

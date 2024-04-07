@@ -1,25 +1,12 @@
 package com.example.spring_bank.entity;
 
-import com.example.spring_bank.dto.AccountDTO;
-import com.example.spring_bank.dto.MemberDTO;
-import com.example.spring_bank.role.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Member;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.sql.Timestamp;
 
 @Setter
 @Getter
@@ -31,22 +18,28 @@ public class MemberEntity {
 
 //  회원가입 열
     @Id
-    @Column(name = "member_num")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberNum;
+    @Column(name = "id")
+    private Long id;
 
-    @Column(name = "member_id")
+//    아이디
+    @Column(name = "member_id",unique = true)
     private String memberId;
-
-
-    @Column(name = "member_pw")
+//    비밀번호
+    @Column(name = "member_pw",nullable = false)
     private String memberPw;
-
+//    이메일
     @Column(name = "member_email",unique = true)
     private String memberEmail;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
+//    가입자 실명
+    @Column(name = "user_name",nullable = false)
+    private String userName;
+//    생성날짜
+    @Column(name="created_at")
+    private Timestamp createdAt;
+//   개인정보 변경 날짜
+    @Column(name = "updated_at")
+    private  Timestamp updatedAt;
 
 
 

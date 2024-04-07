@@ -6,10 +6,12 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.sql.Timestamp;
+
 @Data
 public class MemberDTO {
 
-    private Long memberNum;
+    private Long Id;
 
     private String memberId;
 
@@ -17,6 +19,11 @@ public class MemberDTO {
 
     private String memberEmail;
 
+    private String userName;
+
+    private Timestamp createdAt;
+
+    private Timestamp updateAt;
 
 }
 

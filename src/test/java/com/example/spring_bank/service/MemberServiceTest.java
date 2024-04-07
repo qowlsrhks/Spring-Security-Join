@@ -31,7 +31,7 @@ public class MemberServiceTest {
         memberDTO.setMemberEmail("skswlsrhks@nate.com");
         memberDTO.setMemberId("ohigogo2");
         memberDTO.setMemberPw("1234");
-        return MemberService.MemberCreate(memberDTO, passwordEncoder);
+        return MemberService.memberCreate(memberDTO, passwordEncoder);
     }
 
     @Test
@@ -42,7 +42,6 @@ public class MemberServiceTest {
         assertEquals(memberEntity.getMemberEmail(), saveMember.getMemberEmail());
         assertEquals(memberEntity.getMemberId(), saveMember.getMemberId());
         assertEquals(memberEntity.getMemberPw(), saveMember.getMemberPw());
-        assertEquals(memberEntity.getRole(),saveMember.getRole());
         System.out.println("아이디"+saveMember.getMemberId());
     }
 
