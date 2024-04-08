@@ -18,7 +18,23 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class AccountService {
 
+
     private final AccountRepository accountRepository;
+    private final MemberRepository memberRepository;
+
+
+
+    @Transactional
+    public AccountEntity createAccountNum(AccountEntity accountEntity) {
+        MemberEntity memberEntity = memberRepository.findByMemberId(accountEntity.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+
+        AccountUtils utils = new AccountUtils();
+        accountEntity.setMemberId(memberEntity);
+        accountEntity.setAccountNumber(utils.generateAccountNumber());
+        accountEntity.setAccountMoney(accountEntity.getAccountMoney());
+        return accountRepository.save(accountEntity);
+    }
 
 
 }

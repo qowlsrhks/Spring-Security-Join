@@ -1,5 +1,6 @@
 package com.example.spring_bank.dto;
 
+import com.example.spring_bank.entity.AccountEntity;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -10,9 +11,9 @@ public class TransactionDTO {
 
     private Long transactionId;
 
-    private String fromAccountId;
+    private AccountEntity fromAccountNum; //AccountEntity참조
 
-    private String toAccountId;
+    private AccountEntity toAccountNum; //AccountEntity참조
 
     private BigDecimal transactionAmount;
 

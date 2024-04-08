@@ -18,7 +18,7 @@ public class TransactionService {
     private final AccountRepository accountRepository;
 
     @Transactional
-    public boolean transfer(String fromAccountNum, String toAccountNum, BigDecimal amount) {
+    public boolean transfer(AccountEntity fromAccountNum, AccountEntity toAccountNum, BigDecimal amount) {
         AccountEntity fromAccount = accountRepository.findByAccountNumber(fromAccountNum)
                 .orElseThrow(() -> new IllegalArgumentException("출금 계좌를 찾을 수 없습니다"));
         AccountEntity toAccount = accountRepository.findByAccountNumber(toAccountNum)

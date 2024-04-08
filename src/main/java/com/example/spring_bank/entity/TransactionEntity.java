@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -20,18 +21,19 @@ public class TransactionEntity {
 
 //    accountEntnty참조해서 id찾기
     @ManyToOne
-    @JoinColumn(name = "from_account_id", nullable = false)
-    private AccountEntity fromAccountId;
+    @JoinColumn(name = "from_account_num", nullable = false)
+    private AccountEntity fromAccountNum;
 //    accountEntity 참조 위와 동일
     @ManyToOne
-    @JoinColumn(name = "to_account_id", nullable = false)
-    private AccountEntity toAccountId;
+    @JoinColumn(name = "to_account_num", nullable = false)
+    private AccountEntity toAccountNum;
     
 //    이체 금액
     @Column(name = "transaction_amount", nullable = false)
     private BigDecimal transactionAmount;
     
 //    계좌 이체 기록 날짜
+    @CreationTimestamp
     @Column(name = "transaction_created_at")
     private Timestamp transactionCreateAt;
 

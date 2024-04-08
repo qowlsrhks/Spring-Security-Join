@@ -46,14 +46,14 @@
 <div class="container">
     <h2>계좌 이체</h2>
     <form th:action="@{/account_send}" method="post">
-        <label for="from_member_id">보내는 분 계좌 ID</label>
-        <input type="text" id="from_member_id" name="from_member_id" required>
+        <label for="from_account_num">보내는 분 계좌</label>
+        <input type="text" id="from_account_num" name="from_account_num" required>
 
-        <label for="to_member_id">받는 분 계좌 ID</label>
-        <input type="text" id="to_member_id" name="to_member_id" required>
+        <label for="to_account_num">받는 분 계좌</label>
+        <input type="text" id="to_account_num" name="to_account_num" required>
 
-        <label for="amount">이체 금액</label>
-        <input type="number" id="amount" name="amount" required>
+        <label for="transaction_amount">이체 금액</label>
+        <input type="number" id="transaction_amount" name="transaction_amount" required>
 
         <input type="submit" value="이체">
     </form>

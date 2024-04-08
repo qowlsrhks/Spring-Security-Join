@@ -1,6 +1,7 @@
 package com.example.spring_bank.service;
 
 
+import com.example.spring_bank.dto.AccountDTO;
 import com.example.spring_bank.dto.MemberDTO;
 import com.example.spring_bank.entity.AccountEntity;
 import com.example.spring_bank.entity.MemberEntity;
@@ -51,7 +52,7 @@ public class MemberService {
     }
 
     // 아이디 찾는 기능
-    public Optional<MemberEntity> findByMemberId(String memberId) {
+    public Optional<MemberEntity> findByMemberId(MemberEntity memberId) {
         return memberRepository.findByMemberId(memberId);
     }
 

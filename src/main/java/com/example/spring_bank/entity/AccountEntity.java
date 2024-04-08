@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.catalina.User;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.lang.reflect.Member;
 import java.math.BigDecimal;
@@ -29,11 +31,11 @@ public class AccountEntity {
 
 //    memberEntity 참조
     @ManyToOne
-    @JoinColumn(name = "id", nullable = false)
-    private MemberEntity memberEntity;
+    @JoinColumn(name = "member_id", nullable = false)
+    private MemberEntity memberId;
     
 //    계좌 번호
-    @Column(name = "accountNumber", unique = true, nullable = false)
+    @Column(name = "account_number", unique = true, nullable = false)
     private String accountNumber;
     
 //    계좌에 들어있는 돈
@@ -41,11 +43,13 @@ public class AccountEntity {
     private BigDecimal accountMoney;
 
 //    계좌 생성 날짜
-    @Column(name = "account_create_at")
+    @CreationTimestamp
+    @Column(name = "account_create_at",nullable = false)
     private Timestamp accountCreateAt;
 
 //    계좌 업데이트 날짜
-    @Column(name = "aacount_update_at")
+    @UpdateTimestamp
+    @Column(name = "acount_update_at")
     private Timestamp accountUpdateAt;
 }
 
