@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 public class TransactionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "transaction_id")
     private Long transactionId;
 
 //    accountEntnty참조해서 id찾기

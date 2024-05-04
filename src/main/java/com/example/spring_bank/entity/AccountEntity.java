@@ -32,7 +32,7 @@ public class AccountEntity {
 //    memberEntity 참조
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
-    private MemberEntity memberId;
+    private MemberEntity accountMemberId;
     
 //    계좌 번호
     @Column(name = "account_number", unique = true, nullable = false)
@@ -49,7 +49,7 @@ public class AccountEntity {
 
 //    계좌 업데이트 날짜
     @UpdateTimestamp
-    @Column(name = "acount_update_at")
+    @Column(name = "account_update_at")
     private Timestamp accountUpdateAt;
 }
 

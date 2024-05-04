@@ -1,22 +1,28 @@
 package com.example.spring_bank.controller;
 
 import com.example.spring_bank.dto.AccountDTO;
+import com.example.spring_bank.dto.MemberDTO;
 import com.example.spring_bank.dto.TransactionDTO;
 import com.example.spring_bank.entity.AccountEntity;
+import com.example.spring_bank.entity.MemberEntity;
 import com.example.spring_bank.service.AccountService;
+import com.example.spring_bank.service.AccountUtils;
 import com.example.spring_bank.service.TransactionService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @Controller
 @RequestMapping("/")
 @RequiredArgsConstructor
+@Slf4j
 public class AccountController {
-    private final TransactionService transactionService;
     private final AccountService accountService;
 
     //    계좌이체 화면
@@ -25,16 +31,19 @@ public class AccountController {
         model.addAttribute("transactionDTO", new TransactionDTO());
         return "account_success";
     }
+    
 
-    @PostMapping("account_send")
-    public ResponseEntity<String> transfer(@ModelAttribute TransactionDTO tra) {
-        transactionService.transfer(tra.getFromAccountNum(), tra.getToAccountNum(),tra.getTransactionAmount());
-        return ResponseEntity.ok("Transfer successful");
+//    계좌 생성 페이지
+    @GetMapping("account_create_page")
+    public String accountNumCreateHome(Model model) {
+        model.addAttribute("accountDTO", new AccountDTO());
+        return "/account_create_page";
     }
 
+//    계좌생성
     @PostMapping("account_num_create")
-    public String accountNum(AccountEntity accountEntity) {
-        accountService.createAccountNum(accountEntity);
-        return "redirect:/";
+    @ResponseBody
+    public AccountEntity accountNumCreate(@RequestBody AccountDTO accountDTO) {
+        return accountService.createAndSaveAccount(accountDTO);
     }
 }

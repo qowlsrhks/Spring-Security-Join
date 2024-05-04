@@ -1,19 +1,23 @@
 package com.example.spring_bank.dto;
 
 import com.example.spring_bank.entity.AccountEntity;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TransactionDTO {
 
     private Long transactionId;
 
-    private AccountEntity fromAccountNum; //AccountEntity참조
+    private String fromAccountNum;
 
-    private AccountEntity toAccountNum; //AccountEntity참조
+    private String toAccountNum;
 
     private BigDecimal transactionAmount;
 

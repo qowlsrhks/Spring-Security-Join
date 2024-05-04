@@ -1,10 +1,22 @@
 package com.example.spring_bank.configuration;
 
+import com.example.spring_bank.dto.CustomUserDetails;
+import com.example.spring_bank.service.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,42 +25,40 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity //spring security에 관리를 받음
+@RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/**", "/home").permitAll() // 누구나 접근 허용
-                        .anyRequest().authenticated() // 나머지 요청은 모두 인증 받아야 함
-                );
-        return http.build();
-    }
-
-    @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails user = User.withUsername("user")
-                .password(passwordEncoder().encode("password"))
-                .roles("USER")
-                .build();
-        UserDetails admin = User.withUsername("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user, admin);
-    }
-
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // 비밀번호 암호화를 위한 Encoder
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(Customizer.withDefaults());
+                .csrf(AbstractHttpConfigurer::disable);
+        http
+//                모든 경로 admin아니여도 가능
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().permitAll()
+                )
+                .formLogin(form -> form
+                        .loginPage("/sign")
+                        .defaultSuccessUrl("/", true)
+                        .permitAll()
+                )
+                .logout(LogoutConfigurer::permitAll);
         return http.build();
+
     }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web -> web.ignoring()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()));
+    }
+
+    // 비밀번호 암호화를 위한 Encoder
+    @Bean
+    public PasswordEncoder  passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
 }

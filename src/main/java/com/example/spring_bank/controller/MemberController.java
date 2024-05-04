@@ -7,12 +7,17 @@ import com.example.spring_bank.entity.MemberEntity;
 import com.example.spring_bank.repository.MemberRepository;
 import com.example.spring_bank.service.AccountService;
 import com.example.spring_bank.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.model.IModel;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -23,35 +28,24 @@ import java.util.HashMap;
 public class MemberController {
 
     private final MemberService memberService;
-    private final PasswordEncoder passwordEncoder;
 
     //    회원가입 화면
     @GetMapping("register")
-    public String sign(Model model) {
-        model.addAttribute("memberDTO", new MemberDTO());
-        return "register";
+    public String register(Model model) {
+        model.addAttribute("member", new MemberDTO());
+        return "/register";
     }
 
-    // 회원가입 성공
     @PostMapping("register_form")
-    public String registerMember(MemberDTO memberDTO) {
-        MemberEntity memberEntity = MemberService.memberCreate(memberDTO,passwordEncoder);
-        memberService.saveMember(memberEntity);
-        return "redirect:/sign";
+    public String registerForm(@ModelAttribute("member") MemberDTO memberDTO) {
+        memberService.register(memberDTO);
+        return "/sign";
     }
 
-    //아이디 중복확인
-    @PostMapping("check-memberId")
+
+    @PostMapping("check_member_email")
     @ResponseBody
-    public boolean checkMemberIdDuplicate(@RequestParam("memberId") String memberId) {
-        return memberService.checkMemberIdDuplicate(memberId);
+    public boolean checkMemberEmail(@RequestParam String memberEmail) {
+         return memberService.checkMemberEmailDuplicate(memberEmail);
     }
-
-    //이메일 중복확인
-    @PostMapping("check-memberEmail")
-    @ResponseBody
-    public boolean checkMemberEmailDuplicate(@RequestParam("memberEmail") String memberEmail) {
-        return memberService.checkMemberEmailDuplicate(memberEmail);
-    }
-
 }

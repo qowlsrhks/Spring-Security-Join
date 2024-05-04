@@ -1,11 +1,7 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8">
     <title>회원가입</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
-    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
     <style>
         body {
             font-family: Arial, sans-serif; /* 폰트 설정 */
@@ -40,27 +36,27 @@
 
 <div class="container">
     <h2>회원가입</h2>
-    <form th:action="@{/register_form}" th:method="post">
+    <form th:action="@{register_form}" th:method="post" th:object="${member}" id="register_top" name="register_top">
         <div class="form-group">
-            <label for="memberId">가입자 이름</label>
-            <input type="text" id="userName" name="userName" >
-            <div id="check_userName"></div>
+            <label for="user_name">가입자 이름</label>
+            <input type="text" id="user_name" name="user_name" th:field="*{userName}">
         </div>
         <div class="form-group">
-            <label for="memberId">아이디</label>
-            <input type="text" id="memberId" name="memberId" >
-            <div id="check_memberId"></div>
+            <label for="member_email">이메일</label>
+            <input type="email" id="member_email" name="member_email" th:field="*{memberEmail}">
+            <div id="check_member_email"></div>
         </div>
         <div class="form-group">
-            <label for="memberPw">비밀번호</label>
-            <input type="password" id="memberPw" name="memberPw" >
+            <label for="member_pw">비밀번호</label>
+            <input type="password" id="member_pw" name="member_pw" th:field="*{memberPw}">
+            <div id="check_member_pw"></div>
         </div>
         <div class="form-group">
-            <label for="memberEmail">이메일</label>
-            <input type="email" id="memberEmail" name="memberEmail" >
-            <div id="check_memberEmail"></div>
+            <label for="member_pw_check">비밀번호 확인</label>
+            <input type="password" id="member_pw_check" name="member_pw_check" th:field="*{memberPwCheck}">
+            <div id="check_member_pw_check"></div>
         </div>
-        <button type="submit">완료</button>
+        <button type="submit" onclick="f">완료</button>
         <button type="button" class="back-button" onclick="history.back()">이전 페이지로</button>
     </form>
 </div>
@@ -69,70 +65,71 @@
 </html>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<!--회원 가입 아이디 중복확인-->
-<script>
-    $(document).ready(function () {
-        $("#memberId").focusout(function (){
-            var token = $("meta[name='_csrf']").attr("content");
-            var memberId = $("#memberId").val();
-
-            if (memberId === "") {
-                $("#check_memberId").css("color", "red").text("공백은 아이디로 사용하실 수 없습니다");
-                return false;
-            }
-
-           $.ajax({
-               url: '/check-memberId',
-               type: 'post',
-               beforeSend: function(xhr){
-                   xhr.setRequestHeader("X-CSRF-TOKEN", token);
-               },
-               data:{memberId : memberId},
-               dataType : 'json',
-               success: function (result) {
-                   if (result === true) {
-                       $("#check_memberId").css("color", "blue").text("사용 가능한 아이디입니다");
-                   }else{
-                       $("#check_memberId").css("color", "red").text("사용불가능 한 아이디입니다.");
-                       $("#memberId").val('');
-                   }
-
-               }
-           });
-        });
-    })
-</script>
-
 <!--이메일 중복-->
 <script>
     $(document).ready(function () {
-        $("#memberEmail").focusout(function () {
-            var token = $("meta[name='_csrf']").attr("content");
-            var memberEmail = $("#memberEmail").val();
+        // 이메일 중복 검사
+        $("#member_email").on("input", function () {
+            let memberEmail = $("#member_email").val();
 
             if (memberEmail === "") {
-                $("#check_memberEmail").css("color", "red").text("필수 입력란입니다");
-                return false;
-            }
-
-            $.ajax({
-                url: '/check-memberEmail',
-                type: 'post',
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("X-CSRF-TOKEN", token);
-                },
-                data: {memberEmail: memberEmail},
-                dataType: 'json',
-                success: function (result) {
-                    if (result === true) {
-                        $("#check_memberEmail").css("color", "blue").text("사용 가능한 이메일입니다");
-                    } else {
-                        $("#check_memberEmail").css("color", "red").text("중복된 이메일입니다.");
-                        $("#memberEmail").val('');
+                $("#check_member_email").css("color", "red").text("필수 입력란입니다");
+            } else {
+                $.ajax({
+                    url: '/check_member_email',
+                    type: 'post',
+                    data: { memberEmail: memberEmail },
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result === true) {
+                            $("#check_member_email").css("color", "blue").text("사용 가능한 이메일입니다");
+                        } else {
+                            $("#check_member_email").css("color", "red").text("중복된 이메일입니다.");
+                        }
                     }
-
-                }
-            });
+                });
+            }
         });
-    })
+
+        // 비밀번호 일치 여부 확인
+        $("#member_pw, #member_pw_check").on("input", function () {
+            let memberPw = $("#member_pw").val();
+            let memberPwCheck = $("#member_pw_check").val();
+
+            if (memberPw === memberPwCheck) {
+                $("#check_member_pw_check").css("color", "blue").text("비밀번호가 일치합니다");
+            } else {
+                $("#check_member_pw_check").css("color", "red").text("비밀번호가 일치하지 않습니다");
+            }
+        });
+
+        // 폼 유효성 검사
+        function isEmailValid() {
+            let memberEmail = $("#member_email").val();
+            return memberEmail !== "" && $("#check_member_email").css("color", "blue").text("사용 가능한 이메일입니다");
+        }
+
+        function isPasswordValid() {
+            let memberPw = $("#member_pw").val();
+            let memberPwCheck = $("#member_pw_check").val();
+            return memberPw === memberPwCheck && $("#check_member_pw_check").css("color", "blue").text("비밀번호가 일치합니다");
+        }
+
+        function isUserNameValid() {
+            let userName = $("#user_name").val();
+            return userName !== "";
+        }
+
+        function validateForm() {
+            return isEmailValid() && isPasswordValid() && isUserNameValid();
+        }
+
+        $("#register_top").submit(function (event) {
+            if (!validateForm()) {
+                event.preventDefault();
+                alert('입력한 정보를 다시 확인해주세요.');
+            }
+        });
+    });
+
 </script>
