@@ -39,7 +39,7 @@
     <form th:action="@{register_form}" th:method="post" th:object="${member}" id="register_top" name="register_top">
         <div class="form-group">
             <label for="user_name">가입자 이름</label>
-            <input type="text" id="user_name" name="user_name" th:field="*{userName}">
+            <input type="text" id="user_name" name="user_name" th:field="*{username}">
         </div>
         <div class="form-group">
             <label for="member_email">이메일</label>
@@ -56,7 +56,7 @@
             <input type="password" id="member_pw_check" name="member_pw_check" th:field="*{memberPwCheck}">
             <div id="check_member_pw_check"></div>
         </div>
-        <button type="submit" onclick="f">완료</button>
+        <button type="submit">완료</button>
         <button type="button" class="back-button" onclick="history.back()">이전 페이지로</button>
     </form>
 </div>
@@ -96,9 +96,18 @@
             let memberPw = $("#member_pw").val();
             let memberPwCheck = $("#member_pw_check").val();
 
-            if (memberPw === memberPwCheck) {
+            if(memberPw === ""){
+                $("#check_member_pw").css("color","red").text("필수 입력란입니다")
+            }
+            if(memberPwCheck === ""){
+                $("#check_member_pw_check").css("color","red").text("필수 입력란입니다")
+            }
+
+            if (memberPw === memberPwCheck && memberPw !== "" && memberPwCheck !== "") {
+                $("#check_member_pw").css("color", "blue").text("비밀번호가 일치합니다");
                 $("#check_member_pw_check").css("color", "blue").text("비밀번호가 일치합니다");
             } else {
+                $("#check_member_pw").css("color", "red").text("비밀번호가 일치하지 않습니다");
                 $("#check_member_pw_check").css("color", "red").text("비밀번호가 일치하지 않습니다");
             }
         });

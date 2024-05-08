@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 
 @Setter
 @Getter
@@ -45,7 +46,8 @@ public class MemberEntity{
 
     //    필수 요소 로그인 진행한 사용자가 USER인지 ADMIN인지 설정
     @Column(name = "member_role")
-    private String memberRole;
+    @ElementCollection
+    private Collection<String> memberRole;
 
 
 

@@ -5,6 +5,7 @@ import com.example.spring_bank.dto.MemberDTO;
 import com.example.spring_bank.entity.MemberEntity;
 import com.example.spring_bank.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,13 +18,18 @@ import java.util.Optional;
 
 
 @Service
-@RequiredArgsConstructor
-@Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder encoder;
 
+    @Autowired
+    public MemberService(MemberRepository memberRepository, PasswordEncoder encoder) {
+        this.memberRepository = memberRepository;
+        this.encoder = encoder;
+    }
+
 //    회원가입
+    @Transactional
     public void register(MemberDTO memberDTO) {
         MemberEntity memberEntity = new MemberEntity();
 
@@ -31,10 +37,10 @@ public class MemberService {
             throw new IllegalArgumentException("중복된 이메일입니다");
         }
 
-        memberEntity.setUserName(memberDTO.getUserName());
+        memberEntity.setUserName(memberDTO.getUsername());
         memberEntity.setMemberEmail(memberDTO.getMemberEmail());
         memberEntity.setMemberPw(encoder.encode(memberDTO.getMemberPw()));
-        memberEntity.setMemberRole("ROLE_USER");
+        memberEntity.setMemberRole(memberDTO.getMemberRole());
         memberEntity.setCreatedAt(memberDTO.getCreatedAt());
         memberEntity.setUpdatedAt(memberDTO.getUpdateAt());
 

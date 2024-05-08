@@ -3,44 +3,34 @@ package com.example.spring_bank.service;
 import com.example.spring_bank.dto.MemberDTO;
 import com.example.spring_bank.entity.MemberEntity;
 import com.example.spring_bank.repository.MemberRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class SignService implements UserDetailsService {
+public class SignService{
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
 
-    @Override
-    public UserDetails loadUserByUsername(String memberEmail) throws UsernameNotFoundException {
-        MemberDTO memberDTO = new MemberDTO();
-        memberDTO.setMemberEmail(memberEmail);
-        memberRepository.findByMemberEmail(memberEmail);
-        if (memberDTO != null) {
-            List<GrantedAuthority> authorityList = new ArrayList<>();
-            return new User(memberDTO.getMemberEmail(), memberDTO.getMemberPw(), authorityList);
+    public SignService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
+        this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public MemberDTO login(String memberEmail, String memberPw) {
+        MemberEntity memberEntity = memberRepository.findByMemberEmail(memberEmail);
+        if (memberEntity != null && passwordEncoder.matches(memberPw, memberEntity.getMemberPw())) {
+            return convertToDTO(memberEntity);
         }
         return null;
     }
 
-    @Transactional
-    public boolean join(String memberEmail, String memberPw) {
-        MemberDTO checkMember = new MemberDTO();
-        checkMember.setMemberEmail(memberEmail);
-
-        if(memberRepository.findByMemberEmail(checkMember))
+    private MemberDTO convertToDTO(MemberEntity memberEntity) {
+        MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setMemberEmail(memberEntity.getMemberEmail());
+        memberDTO.setUserName(memberEntity.getUserName());
+        memberDTO.setMemberRole(memberEntity.getMemberRole());
+        return memberDTO;
     }
 }

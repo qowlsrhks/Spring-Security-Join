@@ -1,22 +1,15 @@
 package com.example.spring_bank.controller;
 
 import com.example.spring_bank.dto.AccountDTO;
-import com.example.spring_bank.dto.MemberDTO;
 import com.example.spring_bank.dto.TransactionDTO;
 import com.example.spring_bank.entity.AccountEntity;
-import com.example.spring_bank.entity.MemberEntity;
 import com.example.spring_bank.service.AccountService;
-import com.example.spring_bank.service.AccountUtils;
-import com.example.spring_bank.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 
 @Controller
 @RequestMapping("/")
@@ -42,7 +35,6 @@ public class AccountController {
 
 //    계좌생성
     @PostMapping("account_num_create")
-    @ResponseBody
     public AccountEntity accountNumCreate(@RequestBody AccountDTO accountDTO) {
         return accountService.createAndSaveAccount(accountDTO);
     }
