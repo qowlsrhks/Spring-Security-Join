@@ -27,6 +27,8 @@ public class MemberDTO{
 
     private String userName;
 
+    private String role;
+
     private Timestamp createdAt;
 
     private Timestamp updateAt;

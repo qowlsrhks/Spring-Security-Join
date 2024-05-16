@@ -29,18 +29,8 @@ public class SignService implements UserDetailsService {
         MemberDTO memberDTO = new MemberDTO();
         memberDTO.setMemberEmail(memberEmail);
         memberRepository.findByMemberEmail(memberEmail);
-        if (memberDTO != null) {
-            List<GrantedAuthority> authorityList = new ArrayList<>();
-            return new User(memberDTO.getMemberEmail(), memberDTO.getMemberPw(), authorityList);
-        }
-        return null;
+        List<GrantedAuthority> authorityList = new ArrayList<>();
+        return new User(memberDTO.getMemberEmail(), memberDTO.getMemberPw(), authorityList);
     }
 
-    @Transactional
-    public boolean join(String memberEmail, String memberPw) {
-        MemberDTO checkMember = new MemberDTO();
-        checkMember.setMemberEmail(memberEmail);
-
-        if(memberRepository.findByMemberEmail(checkMember))
-    }
 }

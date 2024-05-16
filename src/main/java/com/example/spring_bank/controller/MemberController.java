@@ -38,8 +38,8 @@ public class MemberController {
 
     @PostMapping("register_form")
     public String registerForm(@ModelAttribute("member") MemberDTO memberDTO) {
-        memberService.register(memberDTO);
-        return "/sign";
+        memberService.registerMember(memberDTO);
+        return "/home";
     }
 
 

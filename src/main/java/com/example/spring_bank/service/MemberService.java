@@ -5,15 +5,11 @@ import com.example.spring_bank.dto.MemberDTO;
 import com.example.spring_bank.entity.MemberEntity;
 import com.example.spring_bank.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
-
-import java.util.Optional;
 
 
 @Service
@@ -24,12 +20,8 @@ public class MemberService {
     private final PasswordEncoder encoder;
 
 //    회원가입
-    public void register(MemberDTO memberDTO) {
+    public void registerMember(MemberDTO memberDTO) {
         MemberEntity memberEntity = new MemberEntity();
-
-        if (memberRepository.existsByMemberEmail(memberDTO.getMemberEmail())) {
-            throw new IllegalArgumentException("중복된 이메일입니다");
-        }
 
         memberEntity.setUserName(memberDTO.getUserName());
         memberEntity.setMemberEmail(memberDTO.getMemberEmail());
@@ -40,6 +32,17 @@ public class MemberService {
 
         memberRepository.save(memberEntity);
     }
+
+    public String loginMember(String memberEmail,String memberPw) {
+        MemberEntity memberEntity = memberRepository.findByMemberEmail(memberEmail);
+        if (memberEntity == null) {
+            return "login_fail";
+        }
+        return "login_success";
+
+        encoder.matches(memberEntity.getMemberPw(),memberPw);
+    }
+
 
 //    이메일 중복 확인
     public boolean checkMemberEmailDuplicate(String memberEmail) {
