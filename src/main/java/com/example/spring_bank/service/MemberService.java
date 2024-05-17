@@ -6,6 +6,9 @@ import com.example.spring_bank.entity.MemberEntity;
 import com.example.spring_bank.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final UserDetailsService userDetailsService;
     private final PasswordEncoder encoder;
 
 //    회원가입
@@ -33,14 +37,14 @@ public class MemberService {
         memberRepository.save(memberEntity);
     }
 
-    public String loginMember(String memberEmail,String memberPw) {
-        MemberEntity memberEntity = memberRepository.findByMemberEmail(memberEmail);
-        if (memberEntity == null) {
-            return "login_fail";
+    public void loginMember(String memberEmail,String memberPw) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(memberEmail);
+        if (userDetails != null  && encoder.matches(memberPw, userDetails.getPassword())) {
+            System.out.println("로그인 성공");
+            SecurityContextHolder.getContext();
+        }else{
+            throw new BadCredentialsException("Invalid email or password");
         }
-        return "login_success";
-
-        encoder.matches(memberEntity.getMemberPw(),memberPw);
     }
 
 
