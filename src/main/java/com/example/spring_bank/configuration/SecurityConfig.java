@@ -1,5 +1,7 @@
 package com.example.spring_bank.configuration;
 
+import com.example.spring_bank.jwt.JwtAuthenticationFilter;
+import com.example.spring_bank.jwt.JwtUtil;
 import com.example.spring_bank.jwt.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -27,7 +29,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
-
+    private JwtUtil jwtUtil;
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
         return configuration.getAuthenticationManager();
@@ -48,6 +50,9 @@ public class SecurityConfig {
                         .anyRequest().permitAll());
         http
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
+
+        http
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
 //        세션 설정
         http

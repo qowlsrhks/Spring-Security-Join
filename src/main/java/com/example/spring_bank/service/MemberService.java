@@ -5,6 +5,7 @@ import com.example.spring_bank.dto.MemberDTO;
 import com.example.spring_bank.entity.MemberEntity;
 import com.example.spring_bank.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,14 +17,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-@RequiredArgsConstructor
-@Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final PasswordEncoder encoder;
 
-//    회원가입
+    public MemberService(MemberRepository memberRepository, CustomUserDetailsService customUserDetailsService, PasswordEncoder encoder) {
+        this.memberRepository = memberRepository;
+        this.customUserDetailsService = customUserDetailsService;
+        this.encoder = encoder;
+    }
+
+    //    회원가입
     public void registerMember(MemberDTO memberDTO) {
         MemberEntity memberEntity = new MemberEntity();
 
@@ -38,10 +43,9 @@ public class MemberService {
     }
 
     public void loginMember(String memberEmail,String memberPw) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(memberEmail);
-        if (userDetails != null  && encoder.matches(memberPw, userDetails.getPassword())) {
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(memberEmail);
+        if (userDetails != null  && encoder.matches(memberPw,userDetails.getPassword())) {
             System.out.println("로그인 성공");
-            SecurityContextHolder.getContext();
         }else{
             throw new BadCredentialsException("Invalid email or password");
         }
