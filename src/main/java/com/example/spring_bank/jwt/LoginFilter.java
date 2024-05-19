@@ -11,7 +11,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 
-
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
@@ -25,7 +24,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String memberEmail = obtainUsername(request);
         String memberPw = obtainPassword(request);
-        System.out.println(memberEmail);
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(memberEmail, memberPw, null);
         return authenticationManager.authenticate(token);
