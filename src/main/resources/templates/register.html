@@ -41,6 +41,12 @@
             <label for="user_name">가입자 이름</label>
             <input type="text" id="user_name" name="user_name" th:field="*{userName}">
         </div>
+        <form th:action="@{/sendSMS}" th:object="${member}" method="post">
+            <label for="member_phone">Phone Number:</label>
+            <input type="text" id="member_phone" th:field="*{memberPhone}" />
+            <div th:if="${#fields.hasErrors('member_phone')}" th:errors="*{memberPhone}"></div>
+            <button type="submit">Send SMS</button>
+        </form>
         <div class="form-group">
             <label for="member_email">이메일</label>
             <input type="email" id="member_email" name="member_email" th:field="*{memberEmail}">

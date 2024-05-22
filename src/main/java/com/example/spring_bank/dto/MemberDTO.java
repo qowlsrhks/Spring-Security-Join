@@ -19,13 +19,17 @@ public class MemberDTO{
 
     private Long memberId;
 
+    private String userName;
+
     private String memberEmail;
+
+    private String memberPhone;
 
     private String memberPw;
 
     private String memberPwCheck;
 
-    private String userName;
+    private String memberAddress;
 
     private String role;
 

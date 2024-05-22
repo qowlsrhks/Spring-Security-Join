@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>약관 동의 페이지</title>
+    <script>
+        function checkAgreement() {
+            let checkBox = document.getElementById("agreement");
+            let submitButton = document.getElementById("submitBtn");
+            submitButton.disabled = !checkBox.checked();
+        }
+    </script>
+</head>
+<body>
+    <form>
+        <input type="checkbox" id="agreement" onclick="checkAgreement()"><label for="agreement">약관의 동의합니다.</label>
+        <br>
+        <button type="submit" id="submitBtn" disabled>동의 완료</button>
+        <button type="button" onclick="history.back()">이전 페이지</button>
+    </form>
+</body>
+</html>

@@ -13,7 +13,6 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
-@RequiredArgsConstructor
 public class JwtUtil {
 
     private final String secretKey = "202020";

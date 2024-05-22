@@ -1,6 +1,8 @@
 package com.example.spring_bank.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,20 +26,34 @@ public class MemberEntity{
     @Column(name = "member_id")
     private Long memberId;
     
+//    가입자 실명
+    @Column(name = "user_name",nullable = false)
+    private String userName;
+    
 //    비밀번호
     @Column(name = "member_pw",nullable = false)
     private String memberPw;
+    
 //    이메일&아이디
     @Column(name = "member_email",unique = true,nullable = false
     )
     private String memberEmail;
-//    가입자 실명
-    @Column(name = "user_name",nullable = false)
-    private String userName;
+
+//    가입자 핸드폰
+    @NotEmpty(message = "Phone number is required")
+    @Pattern(regexp = "^\\d{10,11}$", message = "Phone number must be 10 to 11 digits")
+    @Column(name = "member_phone", nullable = false)
+    private String memberPhone;
+
+    //    주소
+    @Column(name = "member_address")
+    private String memberAddress;
+
 //    생성날짜
     @CreationTimestamp
-    @Column(name="created_at")
+    @Column(name = "created_at")
     private Timestamp createdAt;
+
 //   개인정보 변경 날짜
     @UpdateTimestamp
     @Column(name = "updated_at")
