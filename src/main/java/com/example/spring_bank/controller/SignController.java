@@ -1,15 +1,8 @@
 package com.example.spring_bank.controller;
 
 import com.example.spring_bank.dto.AuthResponse;
-import com.example.spring_bank.dto.LoginRequest;
 import com.example.spring_bank.dto.MemberDTO;
-import com.example.spring_bank.entity.MemberEntity;
 import com.example.spring_bank.jwt.JwtUtil;
-import com.example.spring_bank.jwt.LoginFilter;
-import com.example.spring_bank.service.MemberService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,12 +34,12 @@ public class SignController {
     //    로그인 검증
     @PostMapping("sign_form")
     @ResponseBody
-    public ResponseEntity<?> signMember(@RequestBody LoginRequest loginRequest ) {
+    public ResponseEntity<?> signMember(@RequestBody MemberDTO memberDTO ) {
         try{
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getMemberEmail(),
-                            loginRequest.getMemberPw()
+                            memberDTO.getMemberEmail(),
+                            memberDTO.getMemberPw()
                     )
             );
             String token = jwtUtil.generateToken(authentication.getName());

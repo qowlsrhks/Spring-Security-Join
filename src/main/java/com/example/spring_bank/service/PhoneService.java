@@ -34,8 +34,7 @@ public class PhoneService {
         params.put("receiver", toPhoneNumber);
         params.put("msg", message);
 
-        String response = restTemplate.postForObject(ALIGO_SEND_URL, params, String.class);
-        return response;
+        return restTemplate.postForObject(ALIGO_SEND_URL, params, String.class);
     }
 
 }
