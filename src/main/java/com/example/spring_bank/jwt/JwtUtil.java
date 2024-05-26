@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecretJwk;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -19,37 +23,31 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final String secretKey;
+    private SecretKey secretKey;
 
-    private Key key;
-
-    public JwtUtil(@Value("${jwt.secret.key}") String secretKey) {
-        this.secretKey = secretKey;
-        if (secretKey == null || secretKey.isEmpty()) {
-            throw new IllegalArgumentException("Secret Key cannot be null or empty");
-        }
+    public JwtUtil(@Value("${jwt.secret.key}") String secret) {
+        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
-    @PostConstruct
-    public void init() {
-        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+    public String getUsername(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("memberEmail", String.class);
     }
 
-    // Jwt 생성
-    public String generateToken(String memberEmail) {
+    public String getRole(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("memberRole", String.class);
+    }
+
+    public boolean isExpired(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+    }
+
+    public String createJwt(String memberEmail, String memberRole, Long expiredMs) {
         return Jwts.builder()
-                .setSubject(memberEmail)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10시간
-                .signWith(key)
+                .claim("memberEmail", memberEmail)
+                .claim("memberRole", memberRole)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiredMs))
+                .signWith(secretKey)
                 .compact();
-    }
-
-    public Claims validateToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
     }
 }
