@@ -41,6 +41,6 @@ public class SignController {
     @PostMapping("sign_form")
     @ResponseBody
     public ResponseEntity<?> signMember(@RequestBody MemberDTO memberDTO ) throws Exception{
-
+        return null;
     }
 }

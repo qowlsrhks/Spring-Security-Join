@@ -2,7 +2,6 @@ package com.example.spring_bank.service;
 
 import com.example.spring_bank.entity.MemberEntity;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
