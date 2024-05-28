@@ -1,5 +1,6 @@
 package com.example.spring_bank.configuration;
 
+import com.example.spring_bank.jwt.JwtFilter;
 import com.example.spring_bank.jwt.JwtUtil;
 import com.example.spring_bank.jwt.LoginFilter;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -39,11 +40,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
+//                세션방식은 세션이 고정이라 csrf방어가 필수지만 jwt방식은 하지 않아도 된다
+                .csrf(AbstractHttpConfigurer
+                        ::disable)
+//                jwt방식으로 로그인을 하기때문에
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("admin").hasRole("ADMIN")
+//                        다른 경로는 로그인한 사용자만 입장 가능
+                        .anyRequest().authenticated());
+
+        http
+                .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
+        http
+
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+//        세션 설정
+        http
+                .sessionManagement((session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)));
         return http.build();
     }
 
