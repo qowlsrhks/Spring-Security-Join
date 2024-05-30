@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 
 @Service
 public class MemberService {
@@ -36,7 +38,6 @@ public class MemberService {
         memberEntity.setMemberEmail(memberDTO.getMemberEmail());
         memberEntity.setMemberPhone(memberDTO.getMemberPhone());
         memberEntity.setMemberPw(encoder.encode(memberDTO.getMemberPw()));
-        memberEntity.setMemberRole("ROLE_USER");
         memberEntity.setMemberAddress(memberDTO.getMemberAddress());
         memberEntity.setCreatedAt(memberDTO.getCreatedAt());
         memberEntity.setUpdatedAt(memberDTO.getUpdateAt());

@@ -12,12 +12,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/")
 @Controller
@@ -25,9 +27,9 @@ public class SignController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
-    public SignController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, CustomUserDetailsService customUserDetailsService, UserDetailsService userDetailsService) {
+    public SignController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
@@ -36,20 +38,27 @@ public class SignController {
 
     //    로그인 화면
     @GetMapping("sign")
-    public String showSignForm(Model model) {
-        model.addAttribute("memberDTO", new MemberDTO());
+    public String showSignForm() {
         return "/sign";
     }
 
     //    로그인 검증
-    @PostMapping("sign_form")
+    @PostMapping("authenticate")
     @ResponseBody
-    public String signMember(@RequestBody MemberDTO memberDTO ){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(memberDTO.getMemberEmail(), memberDTO.getMemberPw()));
+    public String createAuthenticationToken(@RequestBody MemberDTO memberDTO) throws Exception {
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(memberDTO.getMemberEmail());
-        final String jwt = jwtUtil.generateToken(userDetails.getUsername());
-        return jwt;
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(memberDTO.getMemberEmail(), memberDTO.getMemberPw())
+            );
+        } catch (AuthenticationException e) {
+            throw new Exception("Incorrect memberEmail or memberPw", e);
+        }
+
+        final UserDetails userDetails = userDetailsService
+                .loadUserByUsername(memberDTO.getMemberEmail());
+
+        return jwtUtil.generateToken(userDetails.getUsername());
+
     }
 }

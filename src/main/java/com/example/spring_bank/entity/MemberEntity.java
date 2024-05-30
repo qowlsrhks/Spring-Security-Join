@@ -1,6 +1,7 @@
 package com.example.spring_bank.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -9,8 +10,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -35,6 +40,7 @@ public class MemberEntity{
     private String memberPw;
     
 //    이메일&아이디
+    @Email
     @Column(name = "member_email",unique = true,nullable = false
     )
     private String memberEmail;
@@ -61,8 +67,7 @@ public class MemberEntity{
 
     //    필수 요소 로그인 진행한 사용자가 USER인지 ADMIN인지 설정
     @Column(name = "member_role")
-    private String memberRole;
-
-
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> memberRole;
 
 }

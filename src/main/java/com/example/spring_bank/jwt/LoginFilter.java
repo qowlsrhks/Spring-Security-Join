@@ -1,6 +1,8 @@
 package com.example.spring_bank.jwt;
 
+import com.example.spring_bank.dto.MemberDTO;
 import com.example.spring_bank.service.CustomUserDetails;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,38 +21,25 @@ import java.util.Iterator;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public LoginFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException{
 
-        String memberEmail = obtainUsername(request);
-        String memberPw = obtainPassword(request);
-
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(memberEmail, memberPw, null);
-        return authenticationManager.authenticate(token);
-
+        try {
+            MemberDTO memberDTO = new ObjectMapper().readValue(request.getInputStream(), MemberDTO.class);
+            return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(memberDTO.getMemberEmail(), memberDTO.getMemberPw()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        String memberEmail = customUserDetails.getUsername();
-
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-
-        String memberRole = auth.getAuthority();
-
-        String token = jwtUtil.createJwt(memberEmail, memberRole, 60 * 60 * 10L);
-        response.addHeader("Authorization", "Bearer " + token);
-
+        
 //        로그인 성공 시 /home으로 이동
         response.sendRedirect("/home");
     }
