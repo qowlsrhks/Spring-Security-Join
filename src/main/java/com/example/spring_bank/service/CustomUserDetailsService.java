@@ -2,6 +2,7 @@ package com.example.spring_bank.service;
 
 import com.example.spring_bank.entity.MemberEntity;
 import com.example.spring_bank.repository.MemberRepository;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,9 +27,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         MemberEntity memberEntity = memberRepository.findByMemberEmail(memberEmail);
 
         if (memberEntity == null) {
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException("User not found"+ memberEmail);
         }
-        return new CustomUserDetails(memberEntity);
+        return new User(memberEntity.getMemberEmail(), memberEntity.getMemberPw(), new ArrayList<>());
 
     }
 }

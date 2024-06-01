@@ -1,84 +1,70 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로그인</title>
+    <title>Sign In</title>
     <style>
-        body {
-            font-family: Arial, sans-serif; /* 폰트 설정 */
-            padding: 20px; /* 바디 내부 여백 */
-        }
-        .container {
-            max-width: 300px; /* 컨테이너 최대 너비 */
-            margin: auto; /* 가운데 정렬 */
-        }
-        .form-group {
-            margin-bottom: 15px; /* 폼 그룹 간격 */
-        }
-        .form-group label {
-            display: block; /* 라벨을 블록 요소로 설정 */
-            margin-bottom: 5px; /* 라벨과 인풋 사이의 여백 */
-        }
-        .form-group input {
-            width: 100%; /* 입력 필드 너비 */
-            padding: 8px; /* 입력 필드 내부 여백 */
-            box-sizing: border-box; /* 패딩을 너비에 포함 */
-        }
-        button {
-            width: 100%; /* 버튼 너비 */
-            padding: 10px; /* 버튼 내부 여백 */
-            background-color: #4CAF50; /* 버튼 배경 색상 */
-            color: white; /* 버튼 글자 색상 */
-            cursor: pointer; /* 마우스 오버 시 커서 변경 */
-            border: none; /* 버튼 테두리 제거 */
-        }
-        button:hover {
-            background-color: #45a049; /* 호버 시 버튼 색상 변경 */
-        }
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { padding: 10px 15px; cursor: pointer; }
+        #error-message { color: red; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h2>로그인</h2>
-    <form id="sign_form" name="sign_form" th:action="@{/authenticate}" th:method="post">
+    <h2>Sign In</h2>
+    <form id="signInForm" th:method="post">
         <div class="form-group">
-            <label for="member_email">아이디</label>
-            <input type="text" id="member_email" name="username" required>
+            <label for="memberEmail">Email:</label>
+            <input type="email" id="memberEmail" name="memberEmail">
         </div>
         <div class="form-group">
-            <label for="member_pw">비밀번호</label>
-            <input type="password" id="member_pw" name="password" required>
+            <label for="memberPw">Password:</label>
+            <input type="password" id="memberPw" name="memberPw">
         </div>
-        <button type="submit">로그인</button>
-        <button onclick="location.href='/register'">회원가입</button>
+        <button type="submit" id="signInButton">Sign In</button>
     </form>
-    <p id="result"></p>
+    <div id="error-message" th:if="${param.error}" th:text="'Authentication failed: ' + ${param.error}"></div>
 </div>
 </body>
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <script>
-    document.getElementById('sign_form').addEventListener('submit', function(event) {
-        event.preventDefault();
+    document.addEventListener('DOMContentLoaded', function () {
+        const signInButton = document.getElementById('signInButton');
+        const errorMessage = document.getElementById('error-message');
 
-        let memberEmail = document.getElementById('member_email').value;
-        let memberPw = document.getElementById('member_pw').value;
+        signInButton.addEventListener('click', function () {
+            const memberEmail = document.getElementById('memberEmail').value;
+            const memberPw = document.getElementById('memberPw').value;
 
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", "/authenticate", true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/authenticate', true);
+            xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                let jsonResponse = JSON.parse(xhr.responseText);
-                document.getElementById("result").innerText = "JWT: " + jsonResponse.token;
-            } else if (xhr.readyState === 4) {
-                document.getElementById("result").innerText = "Login failed";
-            }
-        };
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // Handle success
+                        window.location.href = '/home'; // 로그인 성공 시 /home으로 이동
+                    } else if (xhr.status === 403) {
+                        // Handle forbidden error
+                        errorMessage.innerText = 'Authentication failed: Forbidden';
+                    } else {
+                        // Handle other errors
+                        errorMessage.innerText = 'Authentication failed: ' + xhr.responseText;
+                        window.location.href = '/sign'; // 로그인 실패 시 /sign으로 이동
+                    }
+                }
+            };
 
-        let data = JSON.stringify({"member_email": memberEmail, "member_pw": memberPw});
-        xhr.send(data);
+            const payload = JSON.stringify({ memberEmail: memberEmail, memberPw: memberPw });
+            xhr.send(payload);
+        });
     });
 </script>
-</html>

@@ -2,6 +2,7 @@ package com.example.spring_bank.jwt;
 
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -46,11 +47,15 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+                try{
+                    return Jwts.parserBuilder()
+                            .setSigningKey(getSigningKey())
+                            .build()
+                            .parseClaimsJws(token)
+                            .getBody();
+                }catch(JwtException e){
+                    throw new RuntimeException("Fail to extract claims from token", e);
+                }
     }
 
     public boolean isTokenExpired(String token) {
@@ -58,8 +63,8 @@ public class JwtUtil {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
-        final String extractedUsername = extractUsername(token);
-        return (extractedUsername.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String memberEmail = extractUsername(token);
+        return (memberEmail.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }
 
