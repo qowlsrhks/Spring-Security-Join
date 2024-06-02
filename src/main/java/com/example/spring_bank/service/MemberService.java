@@ -39,8 +39,6 @@ public class MemberService {
         memberEntity.setMemberPhone(memberDTO.getMemberPhone());
         memberEntity.setMemberPw(encoder.encode(memberDTO.getMemberPw()));
         memberEntity.setMemberAddress(memberDTO.getMemberAddress());
-        memberEntity.setCreatedAt(memberDTO.getCreatedAt());
-        memberEntity.setUpdatedAt(memberDTO.getUpdateAt());
 
         memberRepository.save(memberEntity);
     }

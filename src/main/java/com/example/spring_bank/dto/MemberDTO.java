@@ -21,7 +21,6 @@ public class MemberDTO{
 
     private String userName;
 
-    @Email
     private String memberEmail;
 
     private String memberPhone;
@@ -32,7 +31,7 @@ public class MemberDTO{
 
     private String memberAddress;
 
-    private String role;
+    private String memberRole;
 
     private Timestamp createdAt;
 

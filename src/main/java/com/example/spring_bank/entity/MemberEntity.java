@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -20,54 +21,54 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
-@NoArgsConstructor //파라미터가 없는 기본 생성자 생성
-@AllArgsConstructor//모든 필드 값을 파라미터로 받는 생성자 생성
+@NoArgsConstructor
 @Table(name = "TBL_MEMBER")
-public class MemberEntity{
+public class MemberEntity {
 
-//  회원가입 열
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long memberId;
-    
-//    가입자 실명
+
     @Column(name = "user_name",nullable = false)
     private String userName;
-    
-//    비밀번호
+
     @Column(name = "member_pw",nullable = false)
     private String memberPw;
-    
-//    이메일&아이디
+
     @Email
-    @Column(name = "member_email",unique = true,nullable = false
-    )
+    @Column(name = "member_email",unique = true,nullable = false)
     private String memberEmail;
 
-//    가입자 핸드폰
-    @NotEmpty(message = "Phone number is required")
-    @Pattern(regexp = "^\\d{10,11}$", message = "Phone number must be 10 to 11 digits")
     @Column(name = "member_phone", nullable = false)
     private String memberPhone;
 
-    //    주소
     @Column(name = "member_address")
     private String memberAddress;
 
-//    생성날짜
-    @CreationTimestamp
     @Column(name = "created_at")
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
-//   개인정보 변경 날짜
-    @UpdateTimestamp
     @Column(name = "updated_at")
-    private  Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
-    //    필수 요소 로그인 진행한 사용자가 USER인지 ADMIN인지 설정
     @Column(name = "member_role")
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> memberRole;
+    private String memberRole = "ROLE_USER";
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+        if (updatedAt == null) {
+            updatedAt = LocalDateTime.now();
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
 }
+
