@@ -1,25 +1,28 @@
 package com.example.spring_bank.controller;
 
 import com.example.spring_bank.dto.MemberDTO;
-import com.example.spring_bank.entity.MemberEntity;
 import com.example.spring_bank.jwt.JwtUtil;
-import com.example.spring_bank.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/")
+@Slf4j
 public class SignController {
 
     private final AuthenticationManager authenticationManager;
@@ -32,25 +35,25 @@ public class SignController {
     }
 
     @GetMapping("sign")
-    public String showSignForm() {
-        return "sign"; // Remove leading slash
+    public String showSignForm(Model model) {
+        model.addAttribute("memberDTO", new MemberDTO());
+        return "sign";
     }
 
-    @PostMapping("authenticate")
-    public String login(@RequestParam String memberEmail,
-                        @RequestParam String memberPw,
-                        Model model) {
+    @PostMapping("/authenticate")
+    public ResponseEntity<?> authenticate(@RequestParam String memberEmail, @RequestParam String memberPw, HttpServletRequest request, HttpServletResponse response) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(memberEmail, memberPw));
-
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(memberEmail, memberPw));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtUtil.generateJwtToken(authentication);
 
-            return "redirect:/home";
-        } catch (Exception e) {
-            model.addAttribute("error", "Invalid email or password.");
-            return "sign"; // Remove leading slash
+            String jwt = jwtUtil.generateJwtToken(authentication);
+            response.setHeader("Authorization", "Bearer " + jwt);
+
+            // Return JSON response
+            return ResponseEntity.ok().body(Map.of("message", "Authentication successful", "redirect", "/home"));
+        } catch (AuthenticationException e) {
+            // Redirect to "/sign" upon authentication failure
+            return ResponseEntity.ok().body(Map.of("error", "Authentication failed", "redirect", "/sign"));
         }
     }
 }

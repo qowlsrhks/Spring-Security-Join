@@ -2,25 +2,20 @@ package com.example.spring_bank.configuration;
 
 import com.example.spring_bank.jwt.JwtFilter;
 import com.example.spring_bank.jwt.JwtUtil;
-import com.example.spring_bank.repository.MemberRepository;
+import com.example.spring_bank.jwt.LoginFilter;
 import com.example.spring_bank.service.CustomUserDetailsService;
-import org.apache.catalina.filters.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 
 @Configuration
 @EnableWebSecurity
@@ -46,7 +41,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index", "/home", "/register", "/register_form", "/authenticate", "/sign", "/check_member_email").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -54,6 +49,7 @@ public class SecurityConfig {
                 );
 
         http.addFilterBefore(new JwtFilter(jwtUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(new LoginFilter(), JwtFilter.class);
 
         return http.build();
     }
@@ -63,4 +59,3 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-

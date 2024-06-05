@@ -4,31 +4,68 @@
     <title>회원가입</title>
     <style>
         body {
-            font-family: Arial, sans-serif; /* 폰트 설정 */
-            padding: 20px; /* 바디 내부 여백 */
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5; /* Light background color */
+            color: #333333; /* Dark text color */
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         .container {
-            max-width: 400px; /* 컨테이너 최대 너비 */
-            margin: auto; /* 가운데 정렬 */
+            max-width: 400px;
+            width: 100%; /* Ensure responsiveness */
+            background-color: #ffffff; /* White background for the form */
+            padding: 20px;
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
         }
         .form-group {
-            margin-bottom: 15px; /* 폼 그룹 간격 */
+            margin-bottom: 15px;
         }
         .form-group label {
-            display: block; /* 라벨을 블록 요소로 설정 */
-            margin-bottom: 5px; /* 라벨과 인풋 사이의 여백 */
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold; /* Bold labels */
         }
         .form-group input {
-            width: 100%; /* 입력 필드 너비 */
-            padding: 8px; /* 입력 필드 내부 여백 */
-            box-sizing: border-box; /* 패딩을 너비에 포함 */
+            width: 100%;
+            padding: 10px; /* More padding for larger input fields */
+            box-sizing: border-box;
+            border: 1px solid #ccc; /* Light border */
+            border-radius: 4px; /* Rounded corners for inputs */
         }
         button {
-            padding: 10px 15px; /* 버튼 내부 여백 */
-            cursor: pointer; /* 마우스 오버 시 커서 변경 */
+            width: 100%; /* Full width buttons */
+            padding: 10px 15px;
+            margin-top: 10px;
+            cursor: pointer;
+            border: none; /* Remove default border */
+            border-radius: 4px; /* Rounded corners */
+            color: #ffffff; /* White text */
+        }
+        .submit-button {
+            background-color: #007bff; /* Blue background */
+        }
+        .submit-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
         }
         .back-button {
-            margin-right: 10px; /* 완료 버튼과의 간격 */
+            background-color: #6c757d; /* Gray background */
+        }
+        .back-button:hover {
+            background-color: #5a6268; /* Darker gray on hover */
+        }
+        #check_member_email, #check_member_pw, #check_member_pw_check {
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        #check_member_email {
+            color: #007bff; /* Default to blue */
+        }
+        #check_member_pw_check {
+            color: #007bff; /* Default to blue */
         }
     </style>
 </head>
@@ -41,10 +78,10 @@
             <label for="user_name">가입자 이름</label>
             <input type="text" id="user_name" name="user_name" th:field="*{userName}">
         </div>
-        <div>
-            <label for="member_phone">Phone Number:</label>
-            <input type="text" id="member_phone" th:field="*{memberPhone}">
-            <button type="submit">Send SMS</button>
+        <div class="form-group">
+            <label for="member_phone">전화번호</label>
+            <input type="text" id="member_phone" name="member_phone" th:field="*{memberPhone}">
+            <button type="button" class="submit-button">SMS 전송</button>
         </div>
         <div class="form-group">
             <label for="member_email">이메일</label>
@@ -54,27 +91,20 @@
         <div class="form-group">
             <label for="member_pw">비밀번호</label>
             <input type="password" id="member_pw" name="member_pw" th:field="*{memberPw}">
-            <div id="check_member_pw"></div>
         </div>
         <div class="form-group">
             <label for="member_pw_check">비밀번호 확인</label>
             <input type="password" id="member_pw_check" name="member_pw_check" th:field="*{memberPwCheck}">
             <div id="check_member_pw_check"></div>
         </div>
-        <button type="submit">완료</button>
+        <button type="submit" class="submit-button">완료</button>
         <button type="button" class="back-button" onclick="history.back()">이전 페이지로</button>
     </form>
 </div>
 
-</body>
-</html>
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<!--이메일 중복-->
 <script>
     $(document).ready(function () {
-
-        // 이메일 중복 검사
         $("#member_email").on("input", function () {
             let memberEmail = $("#member_email").val();
 
@@ -97,7 +127,6 @@
             }
         });
 
-        // 비밀번호 일치 여부 확인
         $("#member_pw, #member_pw_check").on("input", function () {
             let memberPw = $("#member_pw").val();
             let memberPwCheck = $("#member_pw_check").val();
@@ -109,16 +138,15 @@
             }
         });
 
-        // 폼 유효성 검사
         function isEmailValid() {
             let memberEmail = $("#member_email").val();
-            return memberEmail !== "" && $("#check_member_email").css("color", "blue").text("사용 가능한 이메일입니다");
+            return memberEmail !== "" && $("#check_member_email").css("color") === "blue";
         }
 
         function isPasswordValid() {
             let memberPw = $("#member_pw").val();
             let memberPwCheck = $("#member_pw_check").val();
-            return memberPw === memberPwCheck && $("#check_member_pw_check").css("color", "blue").text("비밀번호가 일치합니다");
+            return memberPw === memberPwCheck && $("#check_member_pw_check").css("color") === "blue";
         }
 
         function isUserNameValid() {
@@ -137,5 +165,6 @@
             }
         });
     });
-
 </script>
+</body>
+</html>

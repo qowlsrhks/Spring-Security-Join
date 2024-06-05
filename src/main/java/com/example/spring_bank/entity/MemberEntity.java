@@ -2,21 +2,10 @@ package com.example.spring_bank.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 
 @Setter
 @Getter
@@ -30,14 +19,14 @@ public class MemberEntity {
     @Column(name = "member_id")
     private Long memberId;
 
-    @Column(name = "user_name",nullable = false)
+    @Column(name = "user_name", nullable = false)
     private String userName;
 
-    @Column(name = "member_pw",nullable = false)
+    @Column(name = "member_pw", nullable = false)
     private String memberPw;
 
     @Email
-    @Column(name = "member_email",unique = true,nullable = false)
+    @Column(name = "member_email", unique = true, nullable = false)
     private String memberEmail;
 
     @Column(name = "member_phone", nullable = false)
@@ -71,4 +60,3 @@ public class MemberEntity {
     }
 
 }
-

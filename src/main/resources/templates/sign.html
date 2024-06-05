@@ -4,13 +4,71 @@
     <meta charset="UTF-8">
     <title>Sign In</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .container { max-width: 400px; margin: auto; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; }
-        .form-group input { width: 100%; padding: 8px; box-sizing: border-box; }
-        button { padding: 10px 15px; cursor: pointer; }
-        #error-message { color: red; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 400px;
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .container h2 {
+            margin-bottom: 20px;
+            color: #333333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .sign-up-button {
+            background-color: #28a745;
+        }
+        .sign-up-button:hover {
+            background-color: #218838;
+        }
+        #error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -19,54 +77,77 @@
     <form id="signInForm" th:action="@{/authenticate}" method="post">
         <div class="form-group">
             <label for="memberEmail">Email:</label>
-            <input type="email" id="memberEmail" name="memberEmail">
+            <input type="email" id="memberEmail" name="memberEmail" required>
         </div>
         <div class="form-group">
             <label for="memberPw">Password:</label>
-            <input type="password" id="memberPw" name="memberPw">
+            <input type="password" id="memberPw" name="memberPw" required>
         </div>
-        <button type="submit" id="signInButton">Sign In</button>
+        <div class="button-group">
+            <button type="submit" id="signInButton">Sign In</button>
+            <button type="button" class="sign-up-button" onclick="window.location.href='/register'">Sign Up</button>
+        </div>
     </form>
-    <div th:if="${error}">
-        <p th:text="${error}"></p>
-    </div>
+    <div id="error-message"></div>
 </div>
+
+<script>
+    document.getElementById('signInForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+
+        const formData = new FormData();
+        formData.append('memberEmail', document.getElementById('memberEmail').value);
+        formData.append('memberPw', document.getElementById('memberPw').value);
+
+        const errorMessageElement = document.getElementById('error-message');
+
+        try {
+            const response = await fetch('/authenticate', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    const data = await response.json();
+                    const redirectUrl = data.redirect;
+                    window.location.href = redirectUrl; // Redirect to the specified URL
+                } else {
+                    throw new Error('Unexpected content type: ' + contentType);
+                }
+            } else {
+                const errorText = await response.text();
+                errorMessageElement.textContent = '로그인 실패: ' + errorText;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            errorMessageElement.textContent = 'An unexpected error occurred.';
+        }
+    });
+
+    // 보호된 엔드포인트에 요청하는 함수
+    function makeRequest() {
+        const token = localStorage.getItem('token');
+
+        fetch('/some-protected-endpoint', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Unauthorized');
+                }
+            })
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
 </body>
 </html>
-
-<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
-
-<!--<script>-->
-<!--    document.addEventListener('DOMContentLoaded', function () {-->
-<!--        const signInButton = document.getElementById('signInButton');-->
-<!--        const errorMessage = document.getElementById('error-message');-->
-
-<!--        signInButton.addEventListener('click', function () {-->
-<!--            const memberEmail = document.getElementById('memberEmail').value;-->
-<!--            const memberPw = document.getElementById('memberPw').value;-->
-
-<!--            const xhr = new XMLHttpRequest();-->
-<!--            xhr.open('POST', '/authenticate', true);-->
-<!--            xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');-->
-
-<!--            xhr.onreadystatechange = function () {-->
-<!--                if (xhr.readyState === 4) {-->
-<!--                    if (xhr.status === 200) {-->
-<!--                        // Handle success-->
-<!--                        window.location.href = '/home'; // 로그인 성공 시 /home으로 이동-->
-<!--                    } else if (xhr.status === 403) {-->
-<!--                        // Handle forbidden error-->
-<!--                        errorMessage.innerText = 'Authentication failed: Forbidden';-->
-<!--                    } else {-->
-<!--                        // Handle other errors-->
-<!--                        errorMessage.innerText = 'Authentication failed: ' + xhr.responseText;-->
-<!--                        window.location.href = '/sign'; // 로그인 실패 시 /sign으로 이동-->
-<!--                    }-->
-<!--                }-->
-<!--            };-->
-
-<!--            const payload = JSON.stringify({ memberEmail: memberEmail, memberPw: memberPw });-->
-<!--            xhr.send(payload);-->
-<!--        });-->
-<!--    });-->
-<!--</script>-->
